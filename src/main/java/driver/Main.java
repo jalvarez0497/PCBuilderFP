@@ -131,7 +131,7 @@ public class Main {
 
     // Allows user to add different types of PC parts and stores them in data structures
     public static void addPart(Scanner sc, HashMap<String, ArrayList<Part>> partsMap, PriorityQueue<Part> priceQueue) {
-        System.out.println("\n---Select a part to add---\n");
+        System.out.println("\nSelect a part to add: \n");
         System.out.println("1. CPU");
         System.out.println("2. GPU");
         System.out.println("3. RAM");
@@ -149,7 +149,7 @@ public class Main {
 
         switch(choice) {
             case 1:
-                System.out.println("---Enter CPU information---");
+                System.out.println("Enter CPU information:");
 
                 System.out.print("Name: ");
                 String cpuName = sc.nextLine();
@@ -184,7 +184,7 @@ public class Main {
                 break;
 
             case 2:
-                System.out.println("---Enter GPU information---");
+                System.out.println("Enter GPU information:");
 
                 System.out.print("Name: ");
                 String gpuName = sc.nextLine();
@@ -216,7 +216,7 @@ public class Main {
                 break;
 
             case 3:
-                System.out.println("---Enter RAM information---");
+                System.out.println("Enter RAM information:");
 
                 System.out.print("Name: ");
                 String ramName = sc.nextLine();
@@ -251,7 +251,7 @@ public class Main {
                 break;
 
             case 4:
-                System.out.println("---Enter Storage information---");
+                System.out.println("Enter Storage information:");
 
                 System.out.print("Name: ");
                 String storageName = sc.nextLine();
@@ -288,7 +288,7 @@ public class Main {
                 break;
 
             case 5:
-                System.out.println("--- Enter Motherboard information ---");
+                System.out.println("Enter Motherboard information:");
 
                 System.out.print("Name: ");
                 String mbName = sc.nextLine();
@@ -321,7 +321,7 @@ public class Main {
                 break;
 
             case 6:
-                System.out.println("--- Enter Power Supply information ---");
+                System.out.println("Enter Power Supply information:");
 
                 System.out.print("Name: ");
                 String psuName = sc.nextLine();
