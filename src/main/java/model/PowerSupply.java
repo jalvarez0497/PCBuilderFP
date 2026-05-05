@@ -1,5 +1,6 @@
 /**
- * Program description
+ * PowerSupply is another subclass of Part class.
+ * In there we set the specs of a PowerSupply PC component.
  *
  * @author [Jean M. Alvarez Robles]
  * @version 1.0
@@ -60,10 +61,11 @@ public class PowerSupply extends Part {
 
     @Override
     public String toString() {
-        return "PowerSupply{" +
-                "wattage=" + wattage +
-                ", efficiency='" + efficiency + '\'' +
-                ", modular=" + modular +
-                '}';
+        return "Power Supply: " + getName() +
+                " | Brand: " + getBrand() +
+                " | Price: $" + String.format("%.2f", getPrice()) +
+                " | Wattage: " + getWattage() + "W" +
+                " | Efficiency: " + getEfficiency() +
+                " | Modular: " + (isModular() ? "Yes" : "No");
     }
 }

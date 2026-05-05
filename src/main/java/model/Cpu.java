@@ -1,5 +1,6 @@
 /**
- * Program description
+ * Cpu class is one of my subclasses.
+ * In this class we set the components of a CPU.
  *
  * @author [Jean M. Alvarez Robles]
  * @version 1.0
@@ -58,10 +59,12 @@ public class Cpu extends Part {
 
     @Override
     public String toString() {
-        return "Cpu{" +
-                "cores=" + cores +
-                ", clockSpeed=" + clockSpeed +
-                ", socket='" + socket + '\'' +
-                '}';
+        return "CPU: " + getName() +
+                " | Brand: " + getBrand() +
+                " | Price: $" + String.format("%.2f", getPrice()) +
+                " | Cores: " + getCores() +
+                " | Clock Speed: " + getClockSpeed() + " GHz" +
+                " | Socket: " + getSocket();
+
     }
 }

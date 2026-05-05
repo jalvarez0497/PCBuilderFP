@@ -1,5 +1,6 @@
 /**
- * Program description
+ * Ram is a subclass of Part class.
+ * This class is to set the specs of a RAM.
  *
  * @author [Jean M. Alvarez Robles]
  * @version 1.0
@@ -59,10 +60,11 @@ public class Ram extends Part{
 
     @Override
     public String toString() {
-        return "Ram{" +
-                "capacity=" + capacity +
-                ", speed=" + speed +
-                ", type='" + type + '\'' +
-                '}';
+        return "RAM: " + getName() +
+                " | Brand: " + getBrand() +
+                " | Price: $" + String.format("%.2f", getPrice()) +
+                " | Capacity: " + getCapacity() + " GB" +
+                " | Speed: " + getSpeed() + " MHz" +
+                " | Type: " + getType();
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Program description
+ * Main works as the console base application. This was done before the GUI program, and was keep in case the GUI program fails.
  *
  * @author [Jean M. Alvarez Robles]
  * @version 1.0
@@ -18,58 +18,106 @@
 package driver;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.PriorityQueue;
+import java.util.Comparator;
 import java.util.Scanner;
 
 import model.*;
 
+/**
+ * Main driver class for the Computer Builder Program
+ * Handles user interaction, menu navigation, and program flow.*/
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        ArrayList<Part> partsList = new ArrayList<>();
 
-        Cpu cpu = null;
-        Motherboard motherboard = null;
+        // HashMap is used to store parts grouped by category Ex.(GPU, CPU, RAM, etc)
+        // Key = Category, Value = list of parts in that particular category
+        HashMap<String, ArrayList<Part>> partsMap = new HashMap<>();
+
+        // PrioriryQueue is used to automatically sort parts by price, from lowest to highest
+        PriorityQueue<Part> priceQueue = new PriorityQueue<>(Comparator.comparingDouble(Part::getPrice));
 
         boolean keepRunning = false;
 
+        // Main program loop. It continues until the user chooses to exit.
         while (!keepRunning) {
             System.out.println("Computer Builder Planner");
             System.out.println("1. Add Part");
             System.out.println("2. View All Parts");
             System.out.println("3. Show Build Price");
             System.out.println("4. Check CPU and Motherboard compatability");
-            System.out.println("5. Exit");
+            System.out.println("5. View Parts Sorted by Price");
+            System.out.println("6. Exit");
 
-            System.out.println("\nChoose an option: ");
+            int choice = getValidInt(sc, "Choose and option: ");
 
-            int choice = sc.nextInt();
-            sc.nextLine();
+            if (choice < 1 || choice > 6) {
+                System.out.println("Invalid option. Try again.");
+                continue;
+            }
 
+            // Handles user menu selection and call for corresponding methods or features.
             switch (choice) {
                 case 1:
-                    addPart(sc, partsList);
+                    addPart(sc, partsMap, priceQueue);
                     break;
 
                 case 2:
-                    if (partsList.isEmpty()) {
+                    if (partsMap.isEmpty()) {
                         System.out.println("No parts added to the build yet");
                     } else {
                         System.out.println("Parts List");
-                        for (Part part : partsList) {
-                            System.out.println(part);
+                        for (String category : partsMap.keySet()) {
+                            System.out.println("\nCategory: " + category);
+
+                            for (Part part : partsMap.get(category)) {
+                                System.out.println(part);
+                            }
                         }
                     }
                     break;
 
                 case 3:
+                    double total = 0.0;
+                    for (ArrayList<Part> list : partsMap.values()) {
+                        for (Part part : list) {
+                            total += part.getPrice();
+                        }
+                    }
+                    System.out.println("Total Build price: $" + total);
 
                     break;
 
+                // Case 4 checks compatibility between CPU and Motherboard based on the socket type
                 case 4:
+                    Cpu cp = null;
+                    Motherboard mb = null;
 
+                    if (partsMap.containsKey("CPU")) {
+                        cp = (Cpu) partsMap.get("CPU").get(0);
+                    }
+
+                    if (partsMap.containsKey("Motherboard")) {
+                        mb = (Motherboard) partsMap.get("Motherboard").get(0);
+                    }
+
+                    if (cp != null && mb != null) {
+                        if (cp.getSocket().equalsIgnoreCase(mb.getSocket())) {
+                            System.out.println(cp.getName() + " is compatible with Motherboard: " + mb.getName());
+                        } else {
+                            System.out.println(cp.getName() + " is NOT compatible with Motherboard: " + mb.getName());
+                        }
+                    } else {
+                        System.out.println("You need at least one CPU and one Motherboard.");
+                    }
                     break;
 
                 case 5:
+                    viewPartsSortedByPrice(priceQueue);
+
+                case 6:
                     keepRunning = true;
                     System.out.println("Exiting program.");
                     break;
@@ -81,7 +129,8 @@ public class Main {
         sc.close();
     }
 
-    public static void addPart(Scanner sc, ArrayList<Part> partsList) {
+    // Allows user to add different types of PC parts and stores them in data structures
+    public static void addPart(Scanner sc, HashMap<String, ArrayList<Part>> partsMap, PriorityQueue<Part> priceQueue) {
         System.out.println("\n---Select a part to add---\n");
         System.out.println("1. CPU");
         System.out.println("2. GPU");
@@ -91,10 +140,12 @@ public class Main {
         System.out.println("6. Power Supply");
         System.out.println("7. Back to main menu");
 
-        System.out.print("Choose part to add: ");
+        int choice = getValidInt(sc, "Choose part to add: ");
 
-        int choice = sc.nextInt();
-        sc.nextLine();
+        if (choice < 1 || choice > 7) {
+            System.out.println("Invalid choice.");
+            return;
+        }
 
         switch(choice) {
             case 1:
@@ -106,20 +157,27 @@ public class Main {
                 System.out.print("Brand: ");
                 String cpuBrand = sc.nextLine();
 
-                System.out.print("Price: ");
-                double cpuPrice = sc.nextDouble();
+                double cpuPrice = getValidDouble(sc, "Price: ");
 
-                System.out.print("Cores: ");
-                int cpuCores = sc.nextInt();
+                int cpuCores = getValidInt(sc, "Cores: ");
 
-                System.out.print("Clock Speed: ");
-                int cpuClockSpeed = sc.nextInt();
-                sc.nextLine();
+                double cpuClockSpeed = getValidDouble(sc, "Clock Speed (GHz): ");
 
                 System.out.print("Socket: ");
                 String cpuSocket = sc.nextLine();
 
+                // Create CPU object base on what the user input
                 Cpu cpu = new Cpu(cpuName, cpuBrand, cpuPrice, cpuCores, cpuClockSpeed, cpuSocket);
+
+                String cpuCategory = cpu.getCategory();
+
+                if (!partsMap.containsKey(cpuCategory)) {
+                    partsMap.put(cpuCategory, new ArrayList<>());
+                }
+
+                // Adding CPU to HashMap and PriorityQueue
+                partsMap.get(cpuCategory).add(cpu);
+                priceQueue.add(cpu);
 
                 System.out.println("CPU added to the build.");
 
@@ -134,22 +192,24 @@ public class Main {
                 System.out.print("Brand: ");
                 String gpuBrand = sc.nextLine();
 
-                System.out.print("Price: ");
-                double gpuPrice = sc.nextDouble();
+                double gpuPrice = getValidDouble(sc, "Price: ");
 
-                System.out.print("Chipset: ");
-                String gpuChipset = sc.nextLine();
+                int gpuVram = getValidInt(sc, "GPU vRam: ");
 
-                System.out.print("vRam: ");
-                int gpuVram = sc.nextInt();
+                int gpuClockSpeed = getValidInt(sc, "GPU clock speed: ");
 
-                System.out.print("Clock Speed: ");
-                int gpuClockSpeed = sc.nextInt();
+                // Create GPU object base on what the user input
+                Gpu gpu = new Gpu(gpuName, gpuBrand, gpuPrice, gpuVram, gpuClockSpeed);
 
-                System.out.print("Power Usage: ");
-                int gpuPowerUsage = sc.nextInt();
+                String gpuCategory = gpu.getCategory();
 
-                Gpu gpu = new Gpu(gpuName, gpuBrand, gpuPrice, gpuChipset, gpuVram, gpuClockSpeed, gpuPowerUsage);
+                if (!partsMap.containsKey(gpuCategory)) {
+                    partsMap.put(gpuCategory, new ArrayList<>());
+                }
+
+                // Adding GPU to HashMap and PriorityQueue
+                partsMap.get(gpuCategory).add(gpu);
+                priceQueue.add(gpu);
 
                 System.out.println("GPU added to the build.");
 
@@ -164,19 +224,27 @@ public class Main {
                 System.out.print("Brand: ");
                 String ramBrand = sc.nextLine();
 
-                System.out.print("Price: ");
-                double ramPrice = sc.nextDouble();
+                double ramPrice = getValidDouble(sc, "Price: ");
 
-                System.out.print("Capacity (GB): ");
-                int ramCapacity = sc.nextInt();
+                int ramCapacity = getValidInt(sc, "Capacity (GB): ");
 
-                System.out.print("Speed: ");
-                int ramSpeed = sc.nextInt();
+                int ramSpeed = getValidInt(sc, "Speed: ");
 
                 System.out.print("Type (DDR4, DDR5): ");
-                String ramType = sc.nextLine();
+                String ramType = sc.nextLine().toUpperCase();
 
+                // Create RAM object base on what the user input
                 Ram ram = new Ram(ramName, ramBrand, ramPrice, ramCapacity, ramSpeed, ramType);
+
+                String ramCategory = ram.getCategory();
+
+                if (!partsMap.containsKey(ramCategory)) {
+                    partsMap.put(ramCategory, new ArrayList<>());
+                }
+
+                // Adding RAM to HashMap and PriorityQueue
+                partsMap.get(ramCategory).add(ram);
+                priceQueue.add(ram);
 
                 System.out.println("RAM added to the build.");
 
@@ -191,68 +259,36 @@ public class Main {
                 System.out.print("Brand: ");
                 String storageBrand = sc.nextLine();
 
-                System.out.print("Price: ");
-                double storagePrice = sc.nextDouble();
+                double storagePrice = getValidDouble(sc, "Price: ");
 
-                System.out.print("Capacity (GB, TB): ");
-                int storageCapacity = sc.nextInt();
+                int storageCapacity = getValidInt(sc, "Capacity (GB, TB): ");
 
                 System.out.print("Type (SSD, HDD): ");
                 String storageType = sc.nextLine();
 
-                System.out.print("Read speed: ");
-                int storageReadspeed = sc.nextInt();
+                int storageReadSpeed = getValidInt(sc, "Read speed: ");
 
-                System.out.print("Write speed: ");
-                int storageWriteSpeed = sc.nextInt();
+                int storageWriteSpeed = getValidInt(sc, "Write speed: ");
 
-                Storage storage = new Storage(storageName, storageBrand, storagePrice, storageCapacity, storageType, storageReadspeed, storageWriteSpeed);
+                // Create Storage object base on what the user input
+                Storage storage = new Storage(storageName, storageBrand, storagePrice, storageCapacity, storageType, storageReadSpeed, storageWriteSpeed);
+
+                String storageCategory = storage.getCategory();
+
+                if (!partsMap.containsKey(storageCategory)) {
+                    partsMap.put(storageCategory, new ArrayList<>());
+                }
+
+                // Adding Storage to HashMap and PriorityQueue
+                partsMap.get(storageCategory).add(storage);
+                priceQueue.add(storage);
 
                 System.out.println("Storage added to the build.");
 
                 break;
 
             case 5:
-                System.out.println("---Enter Power Supply information---");
-
-                System.out.print("Name: ");
-                String psuName = sc.nextLine();
-
-                System.out.print("Brand: ");
-                String psuBrand = sc.nextLine();
-
-                System.out.print("Price: ");
-                double psuPrice = sc.nextDouble();
-
-                System.out.print("Wattage: ");
-                int psuWattage = sc.nextInt();
-
-                System.out.print("Efficiency (Bronze, Silver, Gold): ");
-                String psuEfficiency = sc.nextLine();
-
-                System.out.print("Modular: ");
-                String modular = sc.nextLine();
-
-                boolean isPsuModular = false;
-
-                if(modular.equalsIgnoreCase("no")) {
-                    isPsuModular = false;
-                } else if (modular.equalsIgnoreCase("yes")) {
-                    isPsuModular = true;
-                } else {
-                    System.out.println("Wrong input, please provide a 'yes' or 'no' answer.");
-                    System.out.print("Modular: ");
-                    modular = sc.nextLine();
-                }
-
-                PowerSupply psu = new PowerSupply(psuName, psuBrand, psuPrice, psuWattage, psuEfficiency, isPsuModular);
-
-                System.out.println("Power Supply added to the build.");
-
-                break;
-
-            case 6:
-                System.out.println("---Enter Motherboard information---");
+                System.out.println("--- Enter Motherboard information ---");
 
                 System.out.print("Name: ");
                 String mbName = sc.nextLine();
@@ -260,23 +296,65 @@ public class Main {
                 System.out.print("Brand: ");
                 String mbBrand = sc.nextLine();
 
-                System.out.print("Price: ");
-                double mbPrice = sc.nextDouble();
-                sc.nextLine();
+                double mbPrice = getValidDouble(sc, "Price: ");
 
                 System.out.print("Socket: ");
                 String mbSocket = sc.nextLine();
 
-                System.out.print("Formfactor: ");
-                String mbFormfactor = sc.nextLine();
+                System.out.print("Form Factor: ");
+                String mbFormFactor = sc.nextLine();
 
-                System.out.print("Chipset: ");
-                String mbChipset = sc.nextLine();
+                // Create Motherboard object base on what the user input
+                Motherboard motherboard = new Motherboard(mbName, mbBrand, mbPrice, mbSocket, mbFormFactor);
 
-                Motherboard motherboard = new Motherboard(mbName, mbBrand, mbPrice, mbSocket, mbFormfactor, mbChipset);
+                String mbCategory = motherboard.getCategory();
+
+                if (!partsMap.containsKey(mbCategory)) {
+                    partsMap.put(mbCategory, new ArrayList<>());
+                }
+
+                // Adding Motherboard to HashMap and PriorityQueue
+                partsMap.get(mbCategory).add(motherboard);
+                priceQueue.add(motherboard);
 
                 System.out.println("Motherboard added to the build.");
+                break;
 
+            case 6:
+                System.out.println("--- Enter Power Supply information ---");
+
+                System.out.print("Name: ");
+                String psuName = sc.nextLine();
+
+                System.out.print("Brand: ");
+                String psuBrand = sc.nextLine();
+
+                double psuPrice = getValidDouble(sc, "Price: ");
+
+                int psuWattage = getValidInt(sc, "Wattage: ");
+
+                System.out.print("Efficiency (Bronze, Silver, Gold): ");
+                String psuEfficiency = sc.nextLine();
+
+                System.out.print("Modular (yes/no): ");
+                String modularInput = sc.nextLine();
+
+                boolean isPsuModular = modularInput.equalsIgnoreCase("yes");
+
+                // Create Power Supply object base on what the user input
+                PowerSupply psu = new PowerSupply(psuName, psuBrand, psuPrice, psuWattage, psuEfficiency, isPsuModular);
+
+                String psuCategory = psu.getCategory();
+
+                if (!partsMap.containsKey(psuCategory)) {
+                    partsMap.put(psuCategory, new ArrayList<>());
+                }
+
+                // Adding Power Supply to HashMap and PriorityQueue
+                partsMap.get(psuCategory).add(psu);
+                priceQueue.add(psu);
+
+                System.out.println("Power Supply added to the build.");
                 break;
 
             case 7:
@@ -286,5 +364,70 @@ public class Main {
             default:
                 System.out.println("Invalid choice.");
         }
+    }
+
+    public static void viewPartsSortedByPrice (PriorityQueue<Part> priceQueue) {
+        if (priceQueue.isEmpty()) {
+            System.out.println("No parts added yet.");
+            return;
+        }
+
+        PriorityQueue<Part> copyQueue = new PriorityQueue<>(priceQueue);
+
+        System.out.println("Parts Sorted by Price");
+
+        while (!copyQueue.isEmpty()) {
+            System.out.println(copyQueue.poll());
+        }
+    }
+
+    // Ensures users enters a valid integer number
+    public static int getValidInt(Scanner sc, String message) {
+        boolean isValid = false;
+        int value = 0;
+
+        while (!isValid) {
+            System.out.print(message);
+
+            if (sc.hasNextInt()) {
+                value = sc.nextInt();
+                sc.nextLine();
+
+                if (value >= 0) {
+                    isValid = true;
+                } else {
+                    System.out.println("Value cannot be negative. Try again.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number.");
+                sc.nextLine();
+            }
+        }
+        return value;
+    }
+
+    // Ensures users enter a valid decimal number
+    public static double getValidDouble(Scanner sc, String message) {
+        boolean isValid = false;
+        double value = 0;
+
+        while (!isValid) {
+            System.out.print(message);
+
+            if (sc.hasNextDouble()) {
+                value = sc.nextDouble();
+                sc.nextLine();
+
+                if (value >= 0) {
+                    isValid = true;
+                } else {
+                    System.out.println("Value cannot be negative. Try again.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a valid number.");
+                sc.nextLine();
+            }
+        }
+        return value;
     }
 }

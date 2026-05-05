@@ -1,5 +1,6 @@
 /**
- * Program description
+ * Motherboard class in another subclass of Part class.
+ * In here we set the specs of the Motherboard.
  *
  * @author [Jean M. Alvarez Robles]
  * @version 1.0
@@ -25,13 +26,11 @@ public class Motherboard extends Part {
 
     private String socket;
     private String formFactor;
-    private String chipset;
 
-    public Motherboard(String name, String brand, double price, String socket, String formFactor, String chipset) {
+    public Motherboard(String name, String brand, double price, String socket, String formFactor) {
         super(name, CATEGORY, brand, price);
         this.socket = socket;
         this.formFactor = formFactor;
-        this.chipset = chipset;
     }
 
     public String getSocket() {
@@ -42,10 +41,6 @@ public class Motherboard extends Part {
         return formFactor;
     }
 
-    public String getChipset() {
-        return chipset;
-    }
-
     public void setSocket(String socket) {
         this.socket = socket;
     }
@@ -54,16 +49,12 @@ public class Motherboard extends Part {
         this.formFactor = formFactor;
     }
 
-    public void setChipset(String chipset) {
-        this.chipset = chipset;
-    }
-
     @Override
     public String toString() {
-        return "Motherboard{" +
-                "socket='" + socket + '\'' +
-                ", formFactor='" + formFactor + '\'' +
-                ", chipset='" + chipset + '\'' +
-                '}';
+        return "Motherboard: " + getName() +
+                " | Brand: " + getBrand() +
+                " | Price: $" + String.format("%.2f", getPrice()) +
+                " | Socket: " + getSocket() +
+                " | Form Factor: " + getFormFactor();
     }
 }

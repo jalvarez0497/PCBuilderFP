@@ -1,5 +1,5 @@
 /**
- * Program description
+ * PcBuild class is used to calculate the total cost of the Build.
  *
  * @author [Jean M. Alvarez Robles]
  * @version 1.0
@@ -102,7 +102,7 @@ public class PcBuild {
     }
 
     public void displayBuild() {
-        System.out.println("---PC Build---");
+        System.out.println("PC Build: ");
 
         if (cpu != null) {
             System.out.println(cpu);

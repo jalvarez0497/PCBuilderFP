@@ -1,5 +1,6 @@
 /**
- * Program description
+ * Gpu class is a subclass of Part class.
+ * This class is to set the specs of the GPU.
  *
  * @author [Jean M. Alvarez Robles]
  * @version 1.0
@@ -21,21 +22,13 @@ import model.Part;
 public class Gpu extends Part {
     private static final String CATEGORY = "GPU";
 
-    private String chipset;
     private int vram;
     private int clockSpeed;
-    private int powerUsage;
 
-    public Gpu(String name, String brand, double price, String chipset, int vram, int clockSpeed, int powerUsage) {
+    public Gpu(String name, String brand, double price, int vram, int clockSpeed) {
         super(name, CATEGORY, brand, price);
-        this.chipset = chipset;
         this.vram = vram;
         this.clockSpeed = clockSpeed;
-        this.powerUsage = powerUsage;
-    }
-
-    public String getChipset() {
-        return chipset;
     }
 
     public int getVram() {
@@ -46,14 +39,6 @@ public class Gpu extends Part {
         return clockSpeed;
     }
 
-    public int getPowerUsage() {
-        return powerUsage;
-    }
-
-    public void setChipset(String chipset) {
-        this.chipset = chipset;
-    }
-
     public void setVram(int vram) {
         this.vram = vram;
     }
@@ -62,17 +47,12 @@ public class Gpu extends Part {
         this.clockSpeed = clockSpeed;
     }
 
-    public void setPowerUsage(int powerUsage) {
-        this.powerUsage = powerUsage;
-    }
-
     @Override
     public String toString() {
-        return "Gpu{" +
-                "chipset='" + chipset + '\'' +
-                ", vram=" + vram +
-                ", clockSpeed=" + clockSpeed +
-                ", powerUsage=" + powerUsage +
-                '}';
+        return "GPU: " + getName() +
+                " | Brand: " + getBrand() +
+                " | Price: $" + String.format("%.2f", getPrice()) +
+                " | VRAM: " + getVram() + " GB" +
+                " | Clock Speed: " + getClockSpeed() + " MHz";
     }
 }

@@ -1,5 +1,6 @@
 /**
- * Program description
+ * Storage class is a subclass of Part class.
+ * This class is to set the specs of the Storage component.
  *
  * @author [Jean M. Alvarez Robles]
  * @version 1.0
@@ -69,11 +70,12 @@ public class Storage extends Part{
 
     @Override
     public String toString() {
-        return "Storage{" +
-                "capacity=" + capacity +
-                ", type='" + type + '\'' +
-                ", readSpeed=" + readSpeed +
-                ", writeSpeed=" + writeSpeed +
-                '}';
+        return "Storage: " + getName() +
+                " | Brand: " + getBrand() +
+                " | Price: $" + String.format("%.2f", getPrice()) +
+                " | Capacity: " + getCapacity() +
+                " | Type: " + getType() +
+                " | Read Speed: " + getReadSpeed() + " MB/s" +
+                " | Write Speed: " + getWriteSpeed() + " MB/s";
     }
 }
